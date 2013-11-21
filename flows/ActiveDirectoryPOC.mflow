@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="ActiveDirectoryPOC">
+    <global-unknown description="false" unknownName="ldapConf" index="1" entity-id="global-unknown#1">
+        <content>&lt;ldap:config xmlns:ldap=&quot;http://www.mulesoft.org/schema/mule/ldap&quot; name=&quot;ldapConf&quot; url=&quot;ldap://192.168.56.101:389/&quot; authDn=&quot;cn=admin,ou=people,dc=mulesoft,dc=org&quot; authPassword=&quot;Mulesoft1.&quot;/&gt;</content>
+    </global-unknown>
+    <flow SubFlow="false" name="QueryUsers" entity-id="6f328a25-2d34-41c4-ad45-b1817ee6992b">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="auxiliary;index" value="2"/>
+        </properties>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#1">
+            <graphicalData x="0" y="0" width="0" height="0"/>
+            <endpoint direction="Inbound" message-exchange-pattern="RequestResponse" name="HTTP" type="http://www.mulesoft.org/schema/mule/http/endpoint" entity-id="HTTP#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="port" value="8081"/>
+                    <property name="host" value="localhost"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="followRedirects"/>
+                    <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/http/endpoint"/>
+                    <property name="keep-alive"/>
+                    <property name="contentType"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="password"/>
+                    <property name="exchange-pattern" value="request-response"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="httpLabel"/>
+                    <property name="address"/>
+                    <property name="path" value="users"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="method"/>
+                    <property name="user"/>
+                    <property name="responseTimeout"/>
+                    <property name="mimeType"/>
+                    <property name="auxiliary;index" value="3"/>
+                    <property name="connector-ref"/>
+                </properties>
+            </endpoint>
+            <unknown description="false" index="4" entity-id="unknown#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <content>&lt;ldap:search xmlns:ldap=&quot;http://www.mulesoft.org/schema/mule/ldap&quot; baseDn=&quot;ou=people,dc=mulesoft,dc=org&quot; filter=&quot;(objectClass=person)&quot; scope=&quot;SUB_TREE&quot; maxResults=&quot;100&quot;&gt;
+        	&lt;ldap:attributes&gt;
+                &lt;ldap:attribute&gt;uid&lt;/ldap:attribute&gt;
+                &lt;ldap:attribute&gt;cn&lt;/ldap:attribute&gt;
+                &lt;ldap:attribute&gt;userAccountControl&lt;/ldap:attribute&gt;
+        	&lt;/ldap:attributes&gt;
+    	&lt;/ldap:search&gt;</content>
+            </unknown>
+            <pattern name="Object to String" type="http://www.mulesoft.org/schema/mule/core/object-to-string-transformer" entity-id="Object to String#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType" value="text/html"/>
+                    <property name="auxiliary;index" value="9"/>
+                </properties>
+            </pattern>
+            <pattern name="Logger" type="http://www.mulesoft.org/schema/mule/core/logger" entity-id="Logger#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="message" value="#[payload]"/>
+                    <property name="category"/>
+                    <property name="level" value="INFO"/>
+                    <property name="auxiliary;index" value="10"/>
+                </properties>
+            </pattern>
+        </lane>
+    </flow>
+    <flow SubFlow="false" name="LookupUser" entity-id="5b2aa649-c54f-4dad-bb45-c0aa82b4ebf8">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="auxiliary;index" value="11"/>
+        </properties>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#2">
+            <graphicalData x="0" y="0" width="0" height="0"/>
+            <endpoint direction="Inbound" message-exchange-pattern="RequestResponse" name="HTTP" type="http://www.mulesoft.org/schema/mule/http/endpoint" entity-id="HTTP#2">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="port" value="8081"/>
+                    <property name="host" value="localhost"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="followRedirects"/>
+                    <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/http/endpoint"/>
+                    <property name="keep-alive"/>
+                    <property name="contentType"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="password"/>
+                    <property name="exchange-pattern" value="request-response"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="httpLabel"/>
+                    <property name="address"/>
+                    <property name="path" value="user1"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="method"/>
+                    <property name="user"/>
+                    <property name="responseTimeout"/>
+                    <property name="mimeType"/>
+                    <property name="auxiliary;index" value="12"/>
+                    <property name="connector-ref"/>
+                </properties>
+            </endpoint>
+            <unknown description="false" index="13" entity-id="unknown#2">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <content>&lt;ldap:lookup xmlns:ldap=&quot;http://www.mulesoft.org/schema/mule/ldap&quot; dn=&quot;cn=user1,ou=people,dc=mulesoft,dc=org&quot;/&gt;</content>
+            </unknown>
+            <pattern name="Object to String" type="http://www.mulesoft.org/schema/mule/core/object-to-string-transformer" entity-id="Object to String#2">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType" value="text/html"/>
+                    <property name="auxiliary;index" value="14"/>
+                </properties>
+            </pattern>
+            <pattern name="Logger" type="http://www.mulesoft.org/schema/mule/core/logger" entity-id="Logger#2">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="message" value="#[payload]"/>
+                    <property name="category"/>
+                    <property name="level" value="INFO"/>
+                    <property name="auxiliary;index" value="15"/>
+                </properties>
+            </pattern>
+        </lane>
+    </flow>
+    <flow SubFlow="false" name="UpdateUser" entity-id="4955f4e6-ee04-48c5-a40a-45fc9731201f">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="auxiliary;index" value="16"/>
+        </properties>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#3">
+            <graphicalData x="0" y="0" width="0" height="0"/>
+            <endpoint direction="Inbound" message-exchange-pattern="RequestResponse" name="HTTP" type="http://www.mulesoft.org/schema/mule/http/endpoint" entity-id="HTTP#3">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="port" value="8081"/>
+                    <property name="host" value="localhost"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="followRedirects"/>
+                    <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/http/endpoint"/>
+                    <property name="keep-alive"/>
+                    <property name="contentType"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="password"/>
+                    <property name="exchange-pattern" value="request-response"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="httpLabel"/>
+                    <property name="address"/>
+                    <property name="path" value="update"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="method"/>
+                    <property name="user"/>
+                    <property name="responseTimeout"/>
+                    <property name="mimeType"/>
+                    <property name="auxiliary;index" value="17"/>
+                    <property name="connector-ref"/>
+                </properties>
+            </endpoint>
+            <pattern name="Set Payload" type="http://www.mulesoft.org/schema/mule/core/set-payload" entity-id="Set Payload#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="value" value="#[groovy: return&#xA;&#x9;&#x9;&#x9;['dn':'cn=user1,ou=people,dc=mulesoft,dc=org',&#xA;&#x9;&#x9;&#x9; 'employeeID':'123456',&#xA;&#x9;&#x9;&#x9; 'givenName':'Andres',&#xA;&#x9;&#x9;&#x9; 'sn':'Ramirez',&#xA;&#x9;&#x9;&#x9; 'displayName':'Andres Ramirez',&#xA;&#x9;&#x9;&#x9; 'title':'Solutions Architect',&#xA;&#x9;&#x9;&#x9; 'department':'111',&#xA;&#x9;&#x9;&#x9; 'telephoneNumber':'4157796293',&#xA;&#x9;&#x9;&#x9; 'mobile':'6504506717',&#xA;&#x9;&#x9;&#x9; 'facsimileTelephoneNumber':'4157796294',&#xA;&#x9;&#x9;&#x9; 'mail':'andres.ramirez@mulesoft.com',&#xA;&#x9;&#x9;&#x9; 'streetAddress':'77 Geary Street Suite 400',&#xA;&#x9;&#x9;&#x9; 'physicalDeliveryOfficeName':'San Francisco',&#xA;&#x9;&#x9;&#x9; 'st':'1',&#xA;&#x9;&#x9;&#x9; 'postalCode':'94108',&#xA;&#x9;&#x9;&#x9; 'co':'1',&#xA;&#x9;&#x9;&#x9; 'userAccountControl':'514']&#xA;&#x9;&#x9;]"/>
+                    <property name="auxiliary;index" value="18"/>
+                </properties>
+            </pattern>
+            <unknown description="false" index="19" entity-id="unknown#3">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <content>&lt;ldap:modify xmlns:ldap=&quot;http://www.mulesoft.org/schema/mule/ldap&quot; config-ref=&quot;ldapConf&quot;/&gt;</content>
+            </unknown>
+            <pattern name="Object to String" type="http://www.mulesoft.org/schema/mule/core/object-to-string-transformer" entity-id="Object to String#3">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType" value="text/html"/>
+                    <property name="auxiliary;index" value="20"/>
+                </properties>
+            </pattern>
+            <pattern name="Logger" type="http://www.mulesoft.org/schema/mule/core/logger" entity-id="Logger#3">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="message" value="#[payload]"/>
+                    <property name="category"/>
+                    <property name="level" value="INFO"/>
+                    <property name="auxiliary;index" value="21"/>
+                </properties>
+            </pattern>
+        </lane>
+    </flow>
+    <description></description>
+</mule-configuration>

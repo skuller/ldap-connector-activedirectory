@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jdbc-ee="http://www.mulesoft.org/schema/mule/ee/jdbc" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ldap="http://www.mulesoft.org/schema/mule/ldap"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/ldap http://www.mulesoft.org/schema/mule/ldap/current/mule-ldap.xsd
+http://www.mulesoft.org/schema/mule/ee/jdbc http://www.mulesoft.org/schema/mule/ee/jdbc/current/mule-jdbc-ee.xsd">
+	
+	<ldap:config name="ldapConf" url="ldap://192.168.56.101:389/" authDn="cn=admin,ou=people,dc=mulesoft,dc=org" authPassword="Mulesoft1."/>
+	
+	<flow name="QueryUsers" doc:name="QueryUsers">
+		<http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8081" path="users" doc:name="HTTP" />
+		<ldap:search baseDn="ou=people,dc=mulesoft,dc=org" filter="(objectClass=person)" scope="SUB_TREE" maxResults="100">
+        	<ldap:attributes>
+                <ldap:attribute>uid</ldap:attribute>
+                <ldap:attribute>cn</ldap:attribute>
+                <ldap:attribute>userAccountControl</ldap:attribute>
+        	</ldap:attributes>
+    	</ldap:search>
+        <object-to-string-transformer mimeType="text/html" doc:name="Object to String"/>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+	</flow>
+
+	<flow name="LookupUser" doc:name="LookupUser">
+		<http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8081" path="user1" doc:name="HTTP" />
+		<ldap:lookup dn="cn=user1,ou=people,dc=mulesoft,dc=org"/>
+        <object-to-string-transformer mimeType="text/html" doc:name="Object to String"/>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+	</flow>
+	
+	<flow name="UpdateUser" doc:name="UpdateUser">
+		<http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8081" path="update" doc:name="HTTP" />
+        <set-payload value="#[groovy: return
+			['dn':'cn=user1,ou=people,dc=mulesoft,dc=org',
+			 'employeeID':'123456',
+			 'givenName':'Andres',
+			 'sn':'Ramirez',
+			 'displayName':'Andres Ramirez',
+			 'title':'Solutions Architect',
+			 'department':'111',
+			 'telephoneNumber':'4157796293',
+			 'mobile':'6504506717',
+			 'facsimileTelephoneNumber':'4157796294',
+			 'mail':'andres.ramirez@mulesoft.com',
+			 'streetAddress':'77 Geary Street Suite 400',
+			 'physicalDeliveryOfficeName':'San Francisco',
+			 'st':'1',
+			 'postalCode':'94108',
+			 'co':'1',
+			 'userAccountControl':'514']
+		]" doc:name="Set Payload"/>
+    	<ldap:modify config-ref="ldapConf"/>
+        <object-to-string-transformer mimeType="text/html" doc:name="Object to String"/>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+	</flow>
+	
+</mule>
